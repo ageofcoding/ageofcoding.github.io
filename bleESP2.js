@@ -32,7 +32,8 @@ function onDevice()
 		.catch(error => 
 			{
 				clearLog();
-				console.log(error.message)
+				log('Bluetooth Device Connecting Error. Please connect it again.');
+				console.log("BLE Connecting Error:",error.message)
 			});
 }
 
