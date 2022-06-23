@@ -104,17 +104,18 @@ function setData(value)
 }
 
 function getThisValue(theObject) {  //When using "this" as parameter, can get clicked button (object).
-	let encoder = new TextEncoder('utf-8');
-	let data = encoder.encode(theObject.value);
+	let data = theObject.value;
 	return data;
 }
 
 function sendCode(data)
 {
-
-	console.log("Data:",data);
+	console.log("Data before encoding:",data);
+	let encoder = new TextEncoder('utf-8');
+	let data2 = encoder.encode(data);
+	console.log("Data after encoding:",data2);
 	getChar(dataCharacteristic)   //parameter is bluetooth's Chracteristic UUID, connect via bluetooth, and get chracteristic servic.
-	.then(ch => ch.writeValue(data))  // writeValue() or readValue() belong to charateristic servce.
+	.then(ch => ch.writeValue(data2))  // writeValue() or readValue() belong to charateristic servce.
 	.catch(error => console.log(error));
 }
 
