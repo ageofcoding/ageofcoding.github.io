@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<!--  It works well for ESP32 BLE      -->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+	<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+	<script src="bleESP2.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jsrsasign/8.0.4/jsrsasign-all-min.js"></script>
+    <title>speech recognition and query</title>
+<style>
+ --iris: 200px;
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+#face {
+     width: 100%;
+     height: 100%;
+     position: relative;
+      }
+
+.movingRightEye {
+   animation: movingRightEye 2s 8;}
+
+  @keyframes movingRightEye {
+  25% {
+    transform: translateX(-8px); }
+  50% {
+    transform: translateX(0px); }
+  75% {
+    transform: translateX(8px); }
+}
+
+.movingLeftEye {
+   animation: movingLeftEye 2s 8;}
+
+  @keyframes movingLeftEye {
+  25% {
+    transform: translateX(8px); }
+  50% {
+    transform: translateX(0px); }
+  75% {
+    transform: translateX(-8px); }
+}
+
+.rightEyeJittering {
+   animation: rightEyeJittering 2s 50;}
+
+  @keyframes rightEyeJittering {
+  25% {
+    transform: translateX(3px); }
+  50% {
+    transform: translateX(0px); }
+  75% {
+    transform: translateX(-3px); }
+}
+
+.leftEyeJittering {
+   animation: leftEyeJittering 2s 50;}
+
+  @keyframes leftEyeJittering {
+  25% {
+    transform: translateX(-3px); }
+  50% {
+    transform: translateX(0px); }
+  75% {
+    transform: translateX(3px); }
+}
+
+.duration-750 {
+animation-duration: 750ms;}
+
+.infinite {
+  animation-iteration-count: infinite; }
+
+.animation-count-3 {
+  animation-duration: 500ms; }
+  animation-iteration-count: 3;}
+
+.animation-stop {
+  animation-iteration-count: 0;}
+
+
+.upperEyelid {
+  d: path("m 0,110 c 30 -110, 220 -110,200 20 c 20 -132,-170 -132, -200 -20");
+  animation: upper 5s ease-in 9;
+}
+
+
+@keyframes upper {
+  0% {
+     d: path("m 0,110 c 30 -110, 220 -110,200 20 c 20 -132,-170 -132, -200 -20");
+  }
+
+  50% {
+     d: path("m 0,110 c 0 50, 150 70,200 20 c -50 51,-200 32, -200 -20" );
+  }
+}
+
+
+.upperCover {
+  d: path("m 0,110 c 30 -110, 220 -110,200 20 c 20 -130,-170 -130, -200 -20");
+  animation: cover 5s ease-in 9;
+}
+
+
+@keyframes cover {
+
+  0% {
+     d: path("m 0,110 c 30 -110, 220 -110,200 20 c 20 -130,-170 -130, -200 -20");
+  }
+
+  50% {
+     d: path("m 0,110 c 0 50, 150 70,200 20 c 20 -130,-170 -130, -200 -20");
+  }
+
+}
+
+
+.movingLips {
+   	d: path("m 257,302 q 118 82, 236 0 q -118 57, -236 0");
+  animation: lipsPath 0.8s linear 20;
+}
+
+@keyframes lipsPath {
+  0% {
+     d: path("m 257,302 q 118 82, 236 0 q -118 57, -236 0");
+  }
+
+  75% {
+    d: path("m 260,303 q 115 52, 230 0 q -115 25, -230 0");
+  }
+}
+
+.fadeout {
+  visibility: hidden;
+  opacity: 0.66;
+  transition: visibility 0s linear 7.1s, opacity cubic-bezier(0.3, 0, 1, 1) 7s ;
+}
+
+ .lineAnimation {
+  stroke-dasharray: 800;
+  stroke-dashoffset: 800;
+  animation: dash 8s linear 6s forwards;
+}
+
+@keyframes dash {
+  50% { stroke-dashoffset: 0;}
+  100% {display: none}
+}
+
+
+.eyeShape, .eyeShape2, .lipShape {
+            fill: none;
+            stroke-dashoffset: 35%;
+            stroke-dasharray: 0 87.5%;
+            stroke-width: 3px;
+          }
+
+
+.animation0 {
+            stroke: #360745;
+            animation: animation0 12s 1 ease-in 1s;}
+
+.animation1 {
+            stroke: #D61C59;
+            animation: animation1 12s 1 ease-in 1s;}
+
+.animation2 {
+            stroke: #E7D84B;
+            animation: animation2 12s 1 ease-in 1s forwards;}
+
+.animation3 {
+            stroke: #EFEAC5;
+            animation: animation3 12s 1 ease-in 1s forwards;}
+
+.animation4 {
+            stroke: #1B8798;
+            animation: animation4 12s 1 ease-in 1s forwards;}
+
+.animation5 {
+            stroke: #FD2728;
+            animation: animation5 12s 1 ease-in 1s forwards;}
+
+.animation6 {
+            stroke: #333FFF;
+            animation: animation6 12s 1 ease-in 1s forwards;}
+
+@keyframes animation0 {
+            75%{
+                stroke-dasharray: 5% 30%;
+                stroke-dashoffset: 5%;
+              }
+              77%{
+                  stroke-dasharray: 5% 30%;
+                  stroke-dashoffset: 5%;
+                }
+          }
+
+@keyframes animation1 {
+            75%{
+                stroke-dasharray: 5% 30%;
+                stroke-dashoffset: 10%;
+              }
+              77%{
+                  stroke-dasharray: 5% 30%;
+                  stroke-dashoffset: 10%;
+                }
+          }
+
+@keyframes animation2 {
+            75%{
+                stroke-dasharray: 5% 30%;
+                stroke-dashoffset: 15%;
+              }
+              77%{
+                  stroke-dasharray: 5% 30%;
+                  stroke-dashoffset: 15%;
+                }
+          }
+
+@keyframes animation3 {
+            75%{
+                stroke-dasharray: 5% 30%;
+                stroke-dashoffset: 20%;
+              }
+              77%{
+                  stroke-dasharray: 5% 30%;
+                  stroke-dashoffset: 20%;
+                }
+          }
+
+@keyframes animation4 {
+            75%{
+                stroke-dasharray: 5% 30%;
+                stroke-dashoffset: 25%;
+              }
+              77%{
+                  stroke-dasharray: 5% 30%;
+                  stroke-dashoffset: 25%;
+                }
+          }
+
+@keyframes animation5 {
+            75%{
+                stroke-dasharray: 5% 30%;
+                stroke-dashoffset: 30%;
+              }
+              77%{
+                  stroke-dasharray: 5% 30%;
+                  stroke-dashoffset: 30%;
+                }
+          }
+
+@keyframes animation6 {
+            75%{
+                stroke-dasharray: 5% 30%;
+                stroke-dashoffset: 35%;
+              }
+              77%{
+                  stroke-dasharray: 5% 30%;
+                  stroke-dashoffset: 35%;
+                }
+          }
+
+</style>
+  </head>
+  <body>
+
+<div id = "face" >
+ <svg xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 750 400">
+  <defs>
+
+  </defs>
+
+    <defs>
+    <filter id="blur" x="0" y="0">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="12" />
+    </filter>
+	<filter id="blur2" x="0" y="0">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2" />
+    </filter>
+	  </defs>
+	 <defs>
+      <radialGradient id="faceColor" fx="50%" fy="25%" >
+        <stop offset="0%" stop-color="rgba(80, 157, 255, 0.6)" />
+        <stop offset="75%" stop-color="rgba(55, 117, 175, 0.6)" />
+		<stop offset="95%" stop-color="rgba(17, 37, 50, 0.6)" />
+		</radialGradient>
+		</defs>
+
+	<defs>
+      <radialGradient  id="lipColor" fx="50%" fy="15%" >
+        <stop offset="0%" stop-color="rgba(255, 102, 102, 0.95)" />
+        <stop offset="35%" stop-color="rgba(244, 81, 81, 0.95)" />
+        <stop offset="100%" stop-color="rgba(127, 51, 51, 0.95)" />
+		</radialGradient>
+		</defs>
+
+    <defs>
+      <radialGradient id="eyeCoverColor" fx="50%" fy="95%" >
+        <stop offset="0%" stop-color="rgba(102,152, 229, 1)" />
+        <stop offset="100%" stop-color="rgba(167, 203, 245, 1)" />
+		</radialGradient>
+		</defs>
+	<defs>
+      <radialGradient id="iris" >
+        <stop offset="0%" stop-color="#b6aaaa" />
+        <stop offset="89%" stop-color="#90b0fe" />
+        <stop offset="98%" stop-color="#333333" />
+		</radialGradient>
+	</defs>
+
+	<defs>
+      <radialGradient  id="pupil" >
+        <stop offset="0%" stop-color="rgba(33, 33, 33, 1)" />
+        <stop offset="80%" stop-color="rgba(33, 33, 33, 1)" />
+        <stop offset="100%" stop-color="rgba(155, 205, 255, 0.6)" />
+		</radialGradient>
+		</defs>
+
+
+	<g>
+	<path id="background" d="m 25,250 q 120,0 200,150 l 300, 0 q 80,-150 200, -150 l 0, -180 q -20,-50 -70, -70 l -560, 0 q -50 20, -70 70 z "
+	fill ="url(#faceColor)"  filter="url(#blur)" />
+	</g>
+	  <g id="lips">
+	  <path id="lipsInside" d="m 257,302 q 118 78, 236 0 q -118 57, -236 0" fill ="#501010" filter="url(#blur2)" />
+      <path id="lipsPath" d="m 257,302 q 118 82, 236 0 q -118 57, -236 0" fill ="url(#lipColor)" />
+	  <path  id="lowerLip" d = "m 255,300 c 70 72, 170 72, 240 0 q -120 79, -240 0" fill ="url(#lipColor)"/>
+	  </g>
+
+    <g id ="leftEye">
+	<g>
+	<path d="m -25,52 q 100 -50, 210 -25 l 0 -5 q -100 -40,-210 28 " fill ="gray" />
+	<path id="eye-bottom"  d="m 0,110 c 0 49, 149 70,200 20 c 19 -130,-170 -130, -200, -19" fill="rgba(250, 250, 250, 1)" />
+
+	</g>
+	 <g id="eyeBall">
+      <ellipse id="iris" cx="100" cy="96" rx="42" ry="53" fill="url(#iris)" />
+	  <ellipse id="pupil" cx="100" cy="101" rx="32" ry="43" fill="url(#pupil)" />
+      <ellipse id="reflection" cx="80" cy="63" rx="10" ry="12" fill="#FFF" />
+	  </g>
+	  <g id="eyeOutside">
+	<path id="upper-eye-lid-cover"  d="m 0,110 c 30 -110, 220 -110,200 20 c 20 -130,-170 -130, -200, -20" fill="url(#eyeCoverColor)" />
+	<path id="upper-eye-lid"  d="m 0,110 c 30 -110, 220 -110,200 20 c 20 -132,-170 -132, -200, -20" fill="gray" />
+	<path id="lower-eye-lid"   d="m 0,110 c 0 50, 150 70,200 20 c -50 51,-200 32, -200, -20" fill="gray" />
+	  </g>
+	</g>
+	<g id ="right"> </g>
+
+	<defs>
+	<path id="eyeShape"  d="m 0,110 c 0 49, 149 70,200 20 c 19 -130,-170 -130, -200 -20"
+    stroke-width = "3" fill = "none"  transform="translate(112, 0)" />
+	<path id="eyeShape2"  d="m 0,130 c 51 50, 200 29,200 -20 c -25 -104,-219 -115, -200 20"
+	stroke-width = "3" fill = "none"  transform="translate(438, 0)" />
+	<path  id="lipShape" d = "m 255,300 c 70 72, 170 72, 240 0 q -120 59, -240 0" fill = "none" stroke-width = "3" />
+	</defs>
+
+  <g id ="initial" >
+	<rect id="shield" x="0" y="0" width="750" height="400" rx="25" ry="25"  fill ="black"/>
+
+    <use xlink:href="#eyeShape"  class="eyeShape" ></use>
+    <use xlink:href="#eyeShape"  class="eyeShape" ></use>
+    <use xlink:href="#eyeShape"  class="eyeShape" ></use>
+    <use xlink:href="#eyeShape"  class="eyeShape" ></use>
+    <use xlink:href="#eyeShape"  class="eyeShape" ></use>
+	<use xlink:href="#eyeShape"  class="eyeShape" ></use>
+    <use xlink:href="#eyeShape"  class="eyeShape" ></use>
+
+	<use xlink:href="#eyeShape2"  class="eyeShape2" ></use>
+	<use xlink:href="#eyeShape2"  class="eyeShape2" ></use>
+	<use xlink:href="#eyeShape2"  class="eyeShape2" ></use>
+	<use xlink:href="#eyeShape2"  class="eyeShape2" ></use>
+	<use xlink:href="#eyeShape2"  class="eyeShape2" ></use>
+	<use xlink:href="#eyeShape2"  class="eyeShape2" ></use>
+	<use xlink:href="#eyeShape2"  class="eyeShape2" ></use>
+
+    <use xlink:href="#lipShape" class="lipShape"></use>
+	<use xlink:href="#lipShape" class="lipShape"></use>
+	<use xlink:href="#lipShape" class="lipShape"></use>
+	<use xlink:href="#lipShape" class="lipShape"></use>
+	<use xlink:href="#lipShape" class="lipShape"></use>
+	<use xlink:href="#lipShape" class="lipShape"></use>
+	<use xlink:href="#lipShape" class="lipShape"></use>
+
+  </g>
+
+ </svg>
+</div>
+
+ <div>
+	<p> Test Area </p>
+<button id="connect" onclick = "onDevice()">Select device</button>
+<label id = "deviceName"></label>
+</br>
+<pre id = "data"></pre>
+</br>
+<button onclick = "onDisconnectButtonClick()">Disconnect</button>
+</br>
+
+<div id="dataInput" style="display: none;">
+    <p id="DeviceName"> </p>
+    <button id="startButton" value="Start" onclick = "sendCode(getThisValue(this))">Start</button> &nbsp;&nbsp;&nbsp;
+    <button id="forwardButton" value="Back" onclick = "sendCode(getThisValue(this))">Back</button> &nbsp;&nbsp;&nbsp;&nbsp;
+    <button id="stopButton" value="Stop" onclick = "sendCode(getThisValue(this))">Stop</button><br>
+    <button id="leftButton" value="Left" onclick = "sendCode(getThisValue(this))">Left</button> &nbsp;&nbsp;&nbsp;
+    <button id="forwardButton" value="Forward" onclick = "sendCode(getThisValue(this))">Forward</button> &nbsp;&nbsp;&nbsp;
+    <button id="rightButton" value="Right" onclick = "sendCode(getThisValue(this))">Right</button> 
+</div>
+</br>
+<pre id = "log"></pre>
+  
+      <button id="button">Start listening</button>  &nbsp;&nbsp;&nbsp;  <button onclick="changeFace()" >Full Screen</button>	  
+      <div id="result"></div>
+      <p id="message" hidden aria-hidden="true">
+        Your browser doesn't support Speech Recognition. Sorry.
+      </p>
+
+  	  <p id="inputText">    </p>
+ </div>
+
+    <script type="text/javascript">
+	
+var clickStop = true;
+var listening= false;
+var speaking= false;
+	//
+////=================== get token:
+	let private_key_id = "228596a6e87ff40295fdb6cd5fc5be3a0587099f";
+	let private_key = "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCrFBupH2h1yMxg\nhyS8BQDFtOl4NQ+k1y+gUw0y+QscGQK5T6BQL9ocOTlLKoJKqBvQpaJ93iBlgS47\nyphKbbFHkycppMYaCmyWORZKqGfeomhZLcAueqifp9MqldWPJxDIUTt1hgw4AHr6\nU7egovtl/m5SZ54s2UxfO+5ZrDvY7Rl2vNEk+9IZClJjHZKj1G3s1DeJ3tM6dZPP\n9G+g5cU+aOg0gWv+i++0w7M9YumGkVk7DyuVkBNB0SwYTLk2nABHYcSPAGS5O7qM\nIMD2Pff2E7zV7slOM7k4g6rqxlZxgw8wndcguajzQTWt/ReA96VqCB9G0C9hWHnY\n//suYU7FAgMBAAECggEANJQzhCEBC+Iw3iHq6lZnTFwzvRwhuLniC1Y7IkVkYrhV\nG/sa/EoYsL/tmepwrN1J3zBo5mJUdp3jRcEYWRepeqQBT00zDWHSycC11zA27Dfh\n9jaXcDGGjbsYrWfrgNmy0L4WliIiszuCkFkWgKpWtZwi7/SkqogGbuaOdMT4h8ym\ncx6flmKAoBvDDIsPxl0m0dIhokCn+m6PfbmN4pzEWvbi0B8rFDNZzvyqx9wdgu6M\nnyowU+CLg1aDuAajdztPaluFE4lZ2wW8M3TcUhU+5aze2PFEYTBiqVaO2rTdrJZn\n/sSwP9rLRf7giBLPVK4x5MzpATcQwExYAFt/DOrAaQKBgQDVaM1F8oxziDIaTh2Z\njZRuIARVbjmAeaeeIvIf/B39hL/kfHoyCV3PJPCqvDCxvvRgXMtHqrjcaz+RkjK4\nwhgdtJNRtkV2EEQWDMoLlZN3lJu7RcWedmWu4wPptgAT+X6qdslzX51+d/A7PpUr\np02u14zyU2K7MqhJwyTZxT2mUwKBgQDNOJn4/xykNSBEybSzpejLk3QZq5FDqmCu\nn+eZo0W4uytrZGx1A+sFALTWeOxmASmFuK9R1Jzo2kEWKFMMtYDGkLxOaDFLFKZP\nWi/yUlW9h0VDGNcSJ6NJYL6QW/MRxZ83Y1F92nClZoVv/QbGg/SP6l8j7OTTB9vU\nT96lW7HjhwKBgQDCP8ug4H6xZoXcZcARlcpGVwQ60sKqS5GjokFrlauiqCOWkSsU\nwmvN8dzSO8vC7oI3+B7cE+yCTWimU0Gx5JHY8BWsKdGd/n5K58c8tiBtlyoNUxvm\n+fPiNSbJo2z8wXtnJAqH5r9Pb1KOSo+zFWzjObZEmFvk8t41jdfMFPnhmwKBgByu\nJ16UEKWmQw85/UYKDsG8psIbpx6ExiRBdrWTCuBpUAUfMMUdug+l7J/4oFkVGn90\nsxPFmfQ05Fm7YvfoucmGWrq+dv0eMqvuV7sO5KqrJ/PbmdsQrRJJMfis0QiPzNOJ\nzs6+43VKIaXn/7VopZojUA6OQeB4PbGrQ9tqOC8rAoGBAJyMsH+3yzwcQipJ1mYf\nheTzvqMJwQ97fTQlfTYO2Pibi/AnxmSs5V3wP6UbBfbflQoL4GhSk7thGUFNE5Js\nE4ebqImoG9qdOaKO2Y7S8V4FflRqjeifa2pmDANUErQp5X18/2X2BgrTTgOKw7OB\n0DLvrcHes9YguMH7KbpL+UE4\n-----END PRIVATE KEY-----\n";
+	let client_email = "megatest@megaagent-9goq.iam.gserviceaccount.com";
+	const header = {
+        alg: 'RS256',
+        typ: 'JWT',
+        kid: private_key_id  ////???
+      }
+
+      // Payload
+      const payload = {
+        iss: client_email,
+        sub: client_email,
+        iat: KJUR.jws.IntDate.get('now'),
+        exp: KJUR.jws.IntDate.get('now + 1hour'),
+        aud: 'https://dialogflow.googleapis.com/google.cloud.dialogflow.v2.Sessions'
+      }
+
+      const stringHeader = JSON.stringify(header);
+      const stringPayload = JSON.stringify(payload);
+      var token = KJUR.jws.JWS.sign('RS256', stringHeader, stringPayload, private_key);
+
+	console.log("token: " + token);
+//====== Got token for Dialogflow service
+var recognition;
+var msg;
+
+var base_url = 'https://dialogflow.googleapis.com/v2/projects/megaagent-9goq/agent/sessions/';
+var sessionId = Math.floor(Math.random() * 10000000);
+var languageCode = 'en-US';
+ async function queryDialog(input_data){
+ console.log("input_data2:" + input_data )
+  const response = await fetch(
+  base_url + sessionId + ":detectIntent", {
+
+		    method: 'POST',
+
+			headers: {
+				"Accept": "application/json, text/plain, */*",
+                "Content-Type": "application/json",
+
+                "Authorization": "Bearer " + token,
+
+            },
+
+
+            body: JSON.stringify(input_data)
+
+        });
+
+
+	 const data = await response.json();
+	// console.log(data);
+	 result1 = data.queryResult.fulfillmentText;
+/**	 if(result1.length > 200) {
+	 longSpeaking = true;
+	 };  **/
+	 console.log("result length: ", result1.length);
+	 console.log("result: ", data.queryResult.fulfillmentText);
+	 speak(data.queryResult.fulfillmentText);
+};
+	//
+
+let inputText = document.querySelector("#inputText");
+const button = document.getElementById("button");
+
+// var longSpeaking = false;
+var recogitionText = null;
+const result = document.getElementById("result");
+// const main = document.getElementsByTagName("main")[0];  //-------
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+     recognition = new SpeechRecognition();
+
+  recognition.onstart = function(){
+   recogitionText = null;
+    }
+
+
+recognition.onend = function() { //at the end of regnition, start listening.
+		console.log('Speech recognition service end');
+		if (speaking == false && clickStop == false) { 
+			startListening();
+			}
+		}
+
+const onResult = event => {
+        inputText.innerHTML = "";
+        for (const res of event.results) {
+             const text = document.createTextNode(res[0].transcript);
+			 recogitionText =res[0].transcript;
+             if (res.isFinal) {
+                inputText.innerHTML = recogitionText;
+              }
+            }
+		console.log("recogitionText:" + recogitionText);
+		if(recogitionText){
+		sendRecogitionText(recogitionText);
+		}
+          };
+
+   recognition.continuous = false;
+   recognition.addEventListener("result", onResult);
+
+
+   button.addEventListener("click", event => {
+         console.log("before click, listening:" + listening);
+   		if(speaking){
+		    inputText.innerHTML = "Please click me after speaking.";
+			return;
+		}
+      listening ? stopListening() : startListening();
+	  console.log("before click, clickStop:" + clickStop);
+	  clickStop = !listening; // listening value has been updated after stopListening() or startListening() called.
+//	  console.log("button1:" + button);
+          })
+
+if (typeof SpeechRecognition == "undefined") {
+    button.remove();
+    inputText.innerHTML = "The browser does not support speech recognition.";
+        }
+	  //////
+	var code =["Stop","Back","Start","Left","Right","Forward"];
+	let command =[];
+	 command[0] = ["stop","top"]
+	 command[1] = ["back","beck","go back"]
+	 command[2] = ["start","stard"]
+	 command[3] = ["left","lift"]
+	 command[4] = ["right","night","Right"]
+	 command[5] = ["go","forward"]
+	//
+	const sendRecogitionText = (order) => {
+//	console.log("function get order:" + order);
+	order1 = order.replace(/[^A-Za-z\s]/g, "");
+	order2 = order1.trim();
+	order1 = order2.toLowerCase();
+	//console.log("longSpeaking:" + longSpeaking);
+	//console.log("order1:" + order1);
+	var i;
+	for (i = 0; i < 6; i++) {
+	tempA = command[i];
+	//console.log("tempA:" + tempA);
+	//console.log("i:" + i);
+	if (tempA.includes(order1)){
+	console.log("oki:" + i);
+//	console.log("Code[i]:" + code[i]);
+	speak("got it");
+	sendCode(code[i]);
+	//if(i == 0){
+	//setTimeout(sendCode("Stop"), 8000)}
+	return;
+	     }
+       }
+//go to Dialogflow:
+
+	let query =order;
+	console.log("query.length:" + query.length);
+	if((query.length > 0) &&(speaking == false )){
+	let query_data = {"queryInput": {"text": {"text":query,"languageCode":"en-US"}}};
+	queryDialog(query_data);}
+	}
+	
+var synth = window.speechSynthesis; //web speech API function speechSynthesis()
+var voices = [];
+
+//the following code comes from: https://codepen.io/zeeshan-satti/pen/gdobgY 
+// https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesis/getVoices
+//https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesis/voiceschanged_event
+function populateVoiceList() {   
+  voices = synth.getVoices(); //get voices list of the brower supplies.
+  console.log('voices2:', voices);
+}
+
+populateVoiceList();
+if (speechSynthesis.onvoiceschanged !== undefined) {
+  speechSynthesis.onvoiceschanged = populateVoiceList; } 
+
+const speak = message => {
+  msg = new SpeechSynthesisUtterance( )
+  msg.text = message;
+  msg.lang = 'en-US';
+ for (var i = 0, len = voices.length; i < len; i++) {
+ //console.log("speak loop start");
+      if (voices[i].lang == 'en-US') {
+	  console.log("voice: ",voices[i]);
+	  console.log("voicei: ",i);
+      msg.voice = voices[i];
+	 break;
+}}
+
+
+  msg.pitch = 1;
+//  console.log("msg will be spoken.");
+//  console.log("message:" + message);
+  window.speechSynthesis.speak(msg);
+
+  msg.onstart = function(event) {
+    if(listening) {
+	stopListening();}  //when speaking, stop listening.;
+    speaking = true;
+   //
+	// Animation:
+	toEyesJiter();
+	eyeBlink( );
+	setTimeout(function(){
+	lipsPath.style.animationIterationCount = "infinite" }, 200);
+    //
+  }
+
+  msg.onend = function(event) {
+	console.log("speaking :" + speaking);
+	console.log("listening :" + listening);
+  speaking = false;
+ // longSpeaking = false;
+  console.log('msg has finished being spoken after ' + event.elapsedTime + ' milliseconds.');
+  
+   if (listening == false && clickStop == false) {
+	startListening();
+	}
+  //Animation:
+  lipsPath.style.animationIterationCount = "0";  //
+  if(Math.random()>0.3){   //
+  eyeBlink( );
+  setTimeout(function(){ toEyesMove()}, 3900);
+  }
+  }
+  msg.onerror = function(event){
+  console.log("msg error: ")
+  }
+}
+
+
+function startListening() {
+  listening= true;
+  recognition.start();
+  button.textContent = "Stop listening";
+  }
+
+function stopListening() {
+		console.log("button3:" + button);
+		listening = false;
+        recognition.stop();
+        button.textContent = "Start listening";
+         };
+//  end of dialogflow
+
+// animations:
+//const face = document.querySelector("#face");
+
+var initial = document.querySelector("#initial");
+  initial.classList.add("fadeout");
+
+var svgNode =  document.querySelector("svg");
+var leftEye =  svgNode.querySelector("#leftEye");
+
+
+const leftUpperEyelidCover = leftEye.querySelector('#upper-eye-lid-cover')
+const leftUpperEyelid = leftEye.querySelector('#upper-eye-lid');
+leftEye.style = "width: 32%; transform: translateX(15%) scale(1,1); ";
+rightEye = leftEye.cloneNode(true);
+		  //rightEye.style = " postion: absolute; left: 80%; transform: scale(-1,1);";
+rightEye.style = " width: 32%; transform: translateX(85%) scale(-1,1);";
+rightPupil = rightEye.querySelector("#pupil");
+//console.log("rightPupil:" + rightPupil);
+
+const rightUpperEyelid = rightEye.querySelector('#upper-eye-lid');
+const rightUpperEyelidCover = rightEye.querySelector('#upper-eye-lid-cover')
+const right = svgNode.querySelector('#right')
+right.appendChild(rightEye);
+//console.log("rightEye" + rightEye );
+//console.log("leftEye:" + leftEye);
+const leftBall = leftEye.querySelector('#eyeBall')
+//console.log("leftBall:" + leftBall);
+const eyeOutside = leftEye.querySelector('#eyeOutside')
+console.log("eyeOutside:" + eyeOutside);
+///////
+//console.log("rightEye:" + rightEye);
+const rightBall = rightEye.querySelector('#eyeBall')
+
+const rightReflection = rightEye.querySelector("#reflection");
+//console.log("rightReflection:" + rightReflection);
+rightReflection.setAttribute("style", "transform: translateX(41px)");
+const lips = document.querySelector('#lipsPath');
+//console.log("lipsPath:" + lipsPath);
+
+
+function startAnimation(){
+rightUpperEyelidCover.classList.add("upperCover");
+rightUpperEyelid.classList.add("upperEyelid");
+leftUpperEyelid.classList.add("upperEyelid");
+leftUpperEyelidCover.classList.add("upperCover");
+////
+//////
+
+leftBall.classList.add("movingLeftEye");
+rightBall.classList.add("movingRightEye");
+///////
+//////
+lipsPath.classList.add("movingLips");
+
+leftUpperEyelid.classList.add("upperEyelid");
+leftUpperEyelidCover.classList.add("upperCover");
+
+rightUpperEyelid.classList.add("upperEyelid");
+rightUpperEyelidCover.classList.add("upperCover");
+
+leftBall.classList.add("movingLeftEye");
+rightBall.classList.add("movingRightEye");
+
+};
+
+
+
+function eyeBlink( ){
+rightUpperEyelidCover.classList.toggle("upperCover");
+rightUpperEyelid.classList.toggle("upperEyelid");
+leftUpperEyelid.classList.toggle("upperEyelid");
+leftUpperEyelidCover.classList.toggle("upperCover");
+}
+
+function toEyesJiter(){
+leftBall.classList.remove(...leftBall.classList);
+rightBall.classList.remove(...rightBall.classList);
+leftBall.classList.add("leftEyeJittering");
+rightBall.classList.add("rightEyeJittering");
+ }
+
+ function toEyesMove(){
+leftBall.classList.remove(...leftBall.classList);
+rightBall.classList.remove(...rightBall.classList);
+leftBall.classList.add("movingLeftEye");
+rightBall.classList.add("movingRightEye");
+console.log("EYES Moving");
+}
+
+
+
+// for full screen:
+var fullFlag = false;
+
+  document.fullscreenElement = document.fullscreenElement || document.mozFullscreenElement
+            || document.msFullscreenElement || document.webkitFullscreenDocument;
+  document.exitFullscreen = document.exitFullscreen || document.mozExitFullscreen
+            || document.msExitFullscreen || document.webkitExitFullscreen;
+
+function fullScreen(event) {
+toggleFullscreen();
+event.preventDefault();
+    }
+
+function toggleFullscreen() {
+  let elem = face;
+
+  elem.requestFullscreen = elem.requestFullscreen || elem.mozRequestFullscreen
+          || elem.msRequestFullscreen || elem.webkitRequestFullscreen;
+
+  if (!document.fullscreenElement) {
+    elem.requestFullscreen({ navigationUI: "hide" }).then({}).catch(err => {
+      alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+    });
+  } else {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    }
+  }
+}
+
+
+function changeFace() {
+ initial.classList.remove(...initial.classList);
+ //initial.classList.add("show");
+ //console.log("svgNode:" + svgNode);
+ //svgNode.appendChild(initial);
+
+var eyeShape = svgNode.querySelector("#eyeShape");
+var eyeShape2 = svgNode.querySelector("#eyeShape2");
+var lipShape = svgNode.querySelector("#lipShape");
+// console.log("eyeShape Length:" + eyeShape.getTotalLength());  //529
+// console.log("eyeShape2 Length:" + eyeShape2.getTotalLength()); //529
+// console.log("lipShape Length:" + lipShape.getTotalLength());  //520
+ toggleFullscreen();
+ eyeShapeList = svgNode.querySelectorAll(".eyeShape");
+ eyeShape2List = svgNode.querySelectorAll(".eyeShape2");
+ lipShapeList = svgNode.querySelectorAll(".lipShape");
+
+ for (i = 0; i < 7; i++) {
+ eyeShapeList[i].classList.add("animation" + i);
+ eyeShape2List[i].classList.add("animation" + i);
+ lipShapeList[i].classList.add("animation" + i);
+  };
+
+ setTimeout(()=>{
+ //shield.classList.add("fadeout");
+
+  for (i = 0; i < 7; i++) {
+ eyeShapeList[i].classList.remove("animation" + i);
+ eyeShape2List[i].classList.remove("animation" + i);
+ lipShapeList[i].classList.remove("animation" + i);
+  }
+ initial.classList.add("fadeout");}, 12800);
+}
+
+leftEye.addEventListener("click", fullScreen, false);
+startAnimation();
+//end of animations
+// Audio processing:
+/****
+const constraints = {audio: {
+		autoGainControl: true,
+		channelCount: 2,
+        echoCancellation: true,
+        noiseSuppression: true,}}
+
+navigator.mediaDevices.getUserMedia(constraints)
+    .then( stream => {
+    let track = stream.getAudioTracks()[0];
+	console.log(track.getSettings());
+    }).catch( err => serverlog(`ERROR mediaDevices.getUserMedia: ${err}`) )
+//end of audio processing
+***/
+</script>
+
+  </body>
+</html>
